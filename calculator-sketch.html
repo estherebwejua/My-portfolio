@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculator Sketch</title>
+    <style>
+      :root {
+        --bg: #111827;
+        --panel: #1f2937;
+        --panel-alt: #374151;
+        --button: #e5e7eb;
+        --button-operator: #f59e0b;
+        --button-action: #9ca3af;
+        --display: #d1fae5;
+        --text: #f9fafb;
+        --text-dark: #111827;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, #0f172a, #111827 30%, #1f2937);
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .calculator {
+        width: min(92vw, 380px);
+        background: rgba(31, 41, 55, 0.95);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 24px;
+        padding: 20px;
+        box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+      }
+
+      .display {
+        min-height: 94px;
+        background: rgba(209, 250, 229, 0.22);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 18px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-end;
+        padding: 18px 14px;
+        margin-bottom: 18px;
+        color: var(--display);
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 700;
+        letter-spacing: 1px;
+        overflow: hidden;
+      }
+
+      .keys {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+      }
+
+      button {
+        appearance: none;
+        border: none;
+        border-radius: 14px;
+        height: 62px;
+        font-size: 1.3rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.12s ease, filter 0.12s ease;
+      }
+
+      button:hover {
+        filter: brightness(1.04);
+      }
+
+      button:active {
+        transform: translateY(1px) scale(0.99);
+      }
+
+      .digit, .decimal {
+        background: var(--button);
+        color: var(--text-dark);
+      }
+
+      .operator {
+        background: var(--button-operator);
+        color: #fff;
+      }
+
+      .action {
+        background: var(--button-action);
+        color: var(--text-dark);
+      }
+
+      .zero {
+        grid-column: span 2;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="calculator" aria-label="calculator sketch">
+      <div class="display" id="display">0</div>
+
+      <div class="keys">
+        <button class="action">AC</button>
+        <button class="action">±</button>
+        <button class="action">%</button>
+        <button class="operator">÷</button>
+
+        <button class="digit">7</button>
+        <button class="digit">8</button>
+        <button class="digit">9</button>
+        <button class="operator">×</button>
+
+        <button class="digit">4</button>
+        <button class="digit">5</button>
+        <button class="digit">6</button>
+        <button class="operator">−</button>
+
+        <button class="digit">1</button>
+        <button class="digit">2</button>
+        <button class="digit">3</button>
+        <button class="operator">+</button>
+
+        <button class="digit zero">0</button>
+        <button class="decimal">.</button>
+        <button class="operator">=</button>
+      </div>
+    </div>
+
+    <script>
+      const display = document.getElementById('display');
+      const digits = document.querySelectorAll('.digit');
+      const decimal = document.querySelector('.decimal');
+      const clearBtn = document.querySelector('.action');
+      const operators = document.querySelectorAll('.operator');
+
+      digits.forEach((button) => {
+        button.addEventListener('click', () => {
+          if (display.textContent === '0') {
+            display.textContent = button.textContent;
+          } else {
+            display.textContent += button.textContent;
+          }
+        });
+      });
+
+      decimal.addEventListener('click', () => {
+        if (!display.textContent.includes('.')) {
+          display.textContent += '.';
+        }
+      });
+
+      clearBtn.addEventListener('click', () => {
+        display.textContent = '0';
+      });
+
+      operators.forEach((button) => {
+        button.addEventListener('click', () => {
+          if (button.textContent === '=') {
+            try {
+              const expression = display.textContent
+                .replace(/×/g, '*')
+                .replace(/÷/g, '/')
+                .replace(/−/g, '-');
+              display.textContent = Function(`"use strict"; return (${expression})`)();
+            } catch {
+              display.textContent = 'Error';
+            }
+          } else if (display.textContent !== '0') {
+            display.textContent += ` ${button.textContent} `;
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
